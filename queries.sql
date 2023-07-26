@@ -25,8 +25,8 @@ limit 10;
 with interim_table as 
 (
 select
-	concat(first_name, ' ', last_name) as name,
-	round(sum(quantity * price)/count(*),0) as average_income
+	concat(e.first_name, ' ', e.last_name) as name,
+	round(avg(s.quantity * p.price),0) as average_income
 from employees e 
 left join sales s 
 on e.employee_id = s.sales_person_id 
@@ -41,7 +41,7 @@ from interim_table
 select name, average_income
 from interim_table
 where average_income < (select total_avg_income 
-			from total_avg_amount)
+		        from total_avg_amount)
 order by 2 asc;
 
 
@@ -65,3 +65,24 @@ select
 	weekday, 
 	income 
 from sorted_by_day_id;
+
+
+--количество покупателей в разных возрастных группах
+
+with age_category_count as
+(
+select
+ CASE 
+	 WHEN age between 16 and 25 THEN '16-25'
+	 WHEN age between 26 and 40 THEN '26-40' 
+	 WHEN age > 40 THEN '40+' 
+	 ELSE 'не попали в целевую группу'
+ END as age_category
+from customers c
+)
+select 
+	age_category,
+	count(*) 
+from age_category_count
+group by age_category
+order by age_category;
