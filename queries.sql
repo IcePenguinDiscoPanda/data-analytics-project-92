@@ -98,3 +98,29 @@ from sales s
 join products p using (product_id)
 group by 1
 order by 1;
+
+
+--покупатели, первая покупка которых пришлась на акцию (цена 0)
+
+with prom as 
+(
+select
+	c.customer_id, 
+	c.first_name || ' ' || c.last_name as customer,
+	s.sale_date,
+	e.first_name || ' ' || e.last_name as seller,
+	p.price * s.quantity as amount,
+	row_number () over (partition by c.first_name || ' ' || c.last_name) as rn
+from sales s 
+join products p using (product_id) 
+join customers c using (customer_id)
+join employees e on e.employee_id = s.sales_person_id 
+order by 1, 3
+)
+select 
+	customer, 
+	sale_date, 
+	seller
+from prom 
+where rn = 1 and amount = 0
+order by customer_id;
