@@ -86,3 +86,15 @@ select
 from age_category_count
 group by age_category
 order by age_category;
+
+
+--количество покупателей и выручка по месяцам
+
+select 
+	to_char(s.sale_date, 'YYYY-MM') date,
+	count(distinct s.customer_id) total_customers,
+	sum(s.quantity * p.price) income
+from sales s 
+join products p using (product_id)
+group by 1
+order by 1;
