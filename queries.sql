@@ -41,7 +41,7 @@ order by 2;
 with sorted_by_day_id as (
 select 
 	concat(first_name, ' ',  last_name) as name, 
-	to_char(sale_date, 'DAY') as weekday,
+	to_char(sale_date, 'day') as weekday,
 	to_char(sale_date, 'ID') as weekday_id,
 	round(sum(p.price * s.quantity)) as income
 from employees e 
@@ -84,7 +84,7 @@ order by 1;
 select 
 	to_char(s.sale_date, 'YYYY-MM') date,
 	count(distinct s.customer_id) total_customers,
-	round(sum(s.quantity * p.price)) income
+	floor(sum(s.quantity * p.price)) income
 from sales s 
 join products p using (product_id)
 group by 1
